@@ -2,3 +2,5 @@
 name = "gam"
 version = "0.0.1"
 authors = ["sbaugh"]
+[dependencies]
+rand = "0.3"

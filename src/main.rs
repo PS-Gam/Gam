@@ -5,13 +5,36 @@ use std::net::{TcpStream, TcpListener};
 use std::thread;
 use std::convert::AsRef;
 
+/*
+Table of Constants
+*/
+
+
 fn main() {
     fn get_challenge<'a>() -> (&'a str, &'a str) {
-        ("Are you having fun? (y/n)", "y")
+        println!("You have {} points", count.load(Ordering::SeqCst));
+        if count.load(Ordering::SeqCst) < 10 {
+            ("Are you having fun? (y/n)", "y")
+        } else {
+            ("asdfasdfsdf", "n")
+        }
+
     }
+    // Random is hard to import ...
+    fn rand_int() -> i64 {
+        let mut x = 1;
+        let mut ans = count.load(Ordering::SeqCst);
+        for x in 0..50 {
+            // This seems legit ...
+            ans = (ans * 17345 + 13989870) % 9223372036857
+        }
+        ans as i64
+    }
+
     static count: AtomicUsize = ATOMIC_USIZE_INIT;
     let stdin = io::stdin();
     println!("Hello! Welcome to my game!");
+
     println!("Networked? (y/n)");
     let response = stdin.lock().lines().next().unwrap().unwrap();
     let networked = response == "y";
@@ -23,6 +46,7 @@ fn main() {
 
         fn handle_client(stream: TcpStream) {
             loop {
+                
                 let reader = BufReader::new(&stream);
                 let response = reader.lines().next().unwrap().unwrap();
 
@@ -58,6 +82,7 @@ fn main() {
                 println!("WELL SCREW YOU");
                 process::exit(1);
             } else {
+                println!("RAndo num {}", rand_int());
                 count.fetch_add(1, Ordering::SeqCst);
             }
             println!("You have {} points", count.load(Ordering::SeqCst));
