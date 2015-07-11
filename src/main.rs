@@ -1,11 +1,12 @@
 use std::io::{self,BufRead};
 use std::process;
+use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
 
 fn main() {
     fn get_challenge<'a>() -> (&'a str, &'a str) {
         ("Are you having fun? (y/n)", "y")
     }
-    let mut count = 0;
+    static count: AtomicUsize = ATOMIC_USIZE_INIT;
     let stdin = io::stdin();
     println!("Hello! Welcome to my game!");
     loop {
@@ -19,9 +20,9 @@ fn main() {
             process::exit(1);
         }
         else {
-            count += 1;
+            count.fetch_add(1, Ordering::SeqCst) ;
         }
-        println!("You have {} points", count);
+        println!("You have {} points", count.load(Ordering::SeqCst));
     }
 }
 
