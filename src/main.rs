@@ -13,17 +13,38 @@ Table of Constants
 fn main() {
     fn get_challenge<'a>() -> (&'a str, &'a str) {
         println!("You have {} points", count.load(Ordering::SeqCst));
-        if count.load(Ordering::SeqCst) < 10 {
+        let rand_var = rand_int(count.load(Ordering::SeqCst)) % count.load(Ordering::SeqCst);
+        if rand_var < 5 {
             ("Are you having fun? (y/n)", "y")
-        } else {
-            ("asdfasdfsdf", "n")
+        } else if rand_var < 10 {
+            ("Are you a robot? Robots are not permitted to play Proof of Fun", "n")
+        } else if rand_var < 20 {
+            ("Please rate the game from 1 to 5", "5")
+        } else if rand_var < 40 {
+            ("Please rate the game from one to ten", "ten")
+        } else if rand_var < 80 {
+            let val = rand_int(rand_val);
+            (format!("If you're having fun, you can say this number back to me: {}", val) format!("{}", val))
+        } else if rand_var < 160 {
+            let num_char = rand_int(rand_val) % 15;
+            let answer = "";
+            let alphabet = "qwertasdfgzxcvbyuiophjklnm";
+            for i in 0..num_char {
+                answer += alphabet.char_at(rand_int(i) % 26);
+            }
+            (format!("To express your fun, enter this pass phrase: {}", answer) format!("{}", answer))
+        } else if rand_var < 320 {
+            //This is where we want to force the user to use adifferent port. NOT unlock more than one. 
+            // Just that stdin doesn't work anymore. This is meant to be a pain in the ass, so they pay the 250? or so 
+            // to buy another thread 
         }
+
 
     }
     // Random is hard to import ...
-    fn rand_int() -> i64 {
+    fn rand_int(i : i64) -> i64 {
         let mut x = 1;
-        let mut ans = count.load(Ordering::SeqCst);
+        let mut ans = i;
         for x in 0..50 {
             // This seems legit ...
             ans = (ans * 17345 + 13989870) % 9223372036857
@@ -32,6 +53,8 @@ fn main() {
     }
 
     static count: AtomicUsize = ATOMIC_USIZE_INIT;
+    static threads: AtomicUsize = ATOMIC_USIZE_INIT;
+    static points_per_click:AtomicUsize = ATOMIC_USIZE_INIT;
     let stdin = io::stdin();
     println!("Hello! Welcome to my game!");
 
@@ -83,7 +106,7 @@ fn main() {
                 process::exit(1);
             } else {
                 println!("RAndo num {}", rand_int());
-                count.fetch_add(1, Ordering::SeqCst);
+                count.fetch_add(points_per_click.load(Ordering:SeqCst), Ordering::SeqCst);
             }
             println!("You have {} points", count.load(Ordering::SeqCst));
         }
