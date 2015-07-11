@@ -1,7 +1,9 @@
 [package]
 name = "gam"
 version = "0.0.1"
-authors = ["sbaugh"]
+authors = ["sbaugh","abuss"]
+
 [dependencies]
 rand = "0.3"
 sysfs_gpio="*"
+getopts = "0.2"
