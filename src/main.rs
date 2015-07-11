@@ -1,4 +1,5 @@
 extern crate getopts;
+extern crate rand;
 use getopts::Options;
 use std::env;
 use std::io::prelude::*;
