@@ -1,0 +1,10 @@
+"If you're having fun, press A"
+"If you're having fun, press B"
+"Type 'Yes I am having fun'"
+"Type 'I am not a robot'"
+"Rate your user experience from one to five"
+"Rate your time with us from 1 to 10"
+"Tell us about your user experience. Rank it from [exp] to [exp]"
+"Message us on port [exp] whether you are having fun"
+"Tell us how we are doing. Rank the game on port [exp] from one to 10"
+
