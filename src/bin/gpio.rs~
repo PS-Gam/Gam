@@ -1,0 +1,62 @@
+extern crate sysfs_gpio;
+
+use sysfs_gpio::{Direction, Edge, Pin};
+use std::env;
+use std::io::prelude::*;
+use std::io::{stdout,Result};
+
+fn interrupt(pin : u64) -> Result<()> {
+    let output = Pin::new(21);
+    output.export();
+    output.set_direction(Direction::Out);
+    let input = Pin::new(pin);
+    input.with_exported(|| {
+        try!(input.set_direction(Direction::In));
+        try!(input.set_edge(Edge::BothEdges));
+        let mut poller = try!(input.get_poller());
+	            loop {
+            match try!(poller.poll(1000)) {
+                Some(value) => {
+                    println!("{}", value);
+                    output.set_value(value);
+                },
+                None => {
+                    let mut stdout = stdout();
+                    try!(stdout.write(b"."));
+                    try!(stdout.flush());
+                },
+            }
+        }
+    })
+}
+
+fn blink_my_led(led : u64, duration_ms : u32, period_ms : u32) -> io::Result<()> {
+    let my_led = Pin::new(led);
+    my_led.with_exported(|| {
+	try!(my_led.set_direction(Direction::Low));
+	let iterations = duration_ms / period_ms / 2;
+	for _ in 0..iterations {
+	    try!(my_led.set_value(0));
+	    sleep_ms(period_ms);
+	    try!(my_led.set_value(1));
+	    sleep_ms(period_ms);
+	}
+	try!(my_led.set_value(0));
+	Ok(())
+    })
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    if args.len() != 2 {
+        println!("Usage: ./interrupt <pin>");
+    } else {
+        match args[1].parse::<u64>() {
+            Ok(pin) => match interrupt(pin) {
+                Ok(()) => println!("Interrupting Complete!"),
+                Err(err) => println!("Error: {}", err),
+            },
+            Err(_) => println!("Usage: ./interrupt <pin>"),
+        }
+    }
+}
