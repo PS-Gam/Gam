@@ -13,7 +13,7 @@ Table of Constants
 fn main() {
     fn get_challenge<'a>() -> (&'a str, &'a str) {
         println!("You have {} points", count.load(Ordering::SeqCst));
-        let rand_var = rand_int(count.load(Ordering::SeqCst)) % count.load(Ordering::SeqCst);
+        let rand_var = rand_int(count.load(Ordering::SeqCst) as i64) % count.load(Ordering::SeqCst) as i64;
         if rand_var < 5 {
             ("Are you having fun? (y/n)", "y")
         } else if rand_var < 10 {
@@ -23,20 +23,26 @@ fn main() {
         } else if rand_var < 40 {
             ("Please rate the game from one to ten", "ten")
         } else if rand_var < 80 {
-            let val = rand_int(rand_val);
-            (format!("If you're having fun, you can say this number back to me: {}", val) format!("{}", val))
+            ("Please rate the game from 1 to 5", "5")
+            //let val = rand_int(rand_var);
+            //(format!("If you're having fun, you can say this number back to me: {}", val), format!("{}", val))
         } else if rand_var < 160 {
-            let num_char = rand_int(rand_val) % 15;
-            let answer = "";
-            let alphabet = "qwertasdfgzxcvbyuiophjklnm";
-            for i in 0..num_char {
-                answer += alphabet.char_at(rand_int(i) % 26);
-            }
-            (format!("To express your fun, enter this pass phrase: {}", answer) format!("{}", answer))
+            ("Please rate the game from 1 to 5", "5")
+            //let num_char = rand_int(rand_var) % 15;
+            //let answer = "";
+            //let alphabet = "qwertasdfgzxcvbyuiophjklnm";
+            //for i in 0..num_char {
+            //    answer += alphabet.char_at(rand_int(i) as i64 % 26);
+            //}
+            //(format!("To express your fun, enter this pass phrase: {}", answer), format!("{}", answer))
         } else if rand_var < 320 {
+            ("Please rate the game from 1 to 5", "5")
             //This is where we want to force the user to use adifferent port. NOT unlock more than one. 
             // Just that stdin doesn't work anymore. This is meant to be a pain in the ass, so they pay the 250? or so 
             // to buy another thread 
+        }
+        else {
+            ("Please rate the game from 1 to 5", "5")
         }
 
 
@@ -105,8 +111,8 @@ fn main() {
                 println!("WELL SCREW YOU");
                 process::exit(1);
             } else {
-                println!("RAndo num {}", rand_int());
-                count.fetch_add(points_per_click.load(Ordering:SeqCst), Ordering::SeqCst);
+                println!("RAndo num {}", rand_int(count.load(Ordering::SeqCst) as i64));
+                count.fetch_add(points_per_click.load(Ordering::SeqCst), Ordering::SeqCst);
             }
             println!("You have {} points", count.load(Ordering::SeqCst));
         }
